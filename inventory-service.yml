@@ -2,9 +2,6 @@ server:
   port: 8084
 
 spring:
-  application:
-    name: INVENTORY-SERVICE
-
   datasource:
     url: jdbc:postgresql://localhost:5432/inventory_service
     username: postgres
