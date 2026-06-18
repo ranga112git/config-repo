@@ -29,7 +29,15 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,metrics
+
+  tracing:
+    sampling:
+      probability: 1.0
+
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
 
 springdoc:
   swagger-ui:
@@ -45,8 +53,11 @@ eureka:
 
 logging:
   level:
+    root: INFO
     com.example.orderservice.feign: DEBUG
     org.springframework.cloud.openfeign: DEBUG
     feign: DEBUG
     org.springframework.kafka: DEBUG
 
+  pattern:
+    level: "%5p [order-service,%X{traceId:-},%X{spanId:-}]"
