@@ -2,6 +2,9 @@ server:
   port: 8081
 
 spring:
+  application:
+    name: auth-service
+
   datasource:
     url: jdbc:postgresql://localhost:5432/auth-service
     username: postgres
@@ -10,9 +13,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-
     show-sql: true
-
     properties:
       hibernate:
         format_sql: true
@@ -21,6 +22,9 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
+
+  instance:
+    prefer-ip-address: true
 
 management:
   endpoints:
@@ -35,3 +39,18 @@ management:
   tracing:
     sampling:
       probability: 1.0
+
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+
+metrics:
+  tags:
+    application: auth-service
+
+logging:
+  level:
+    root: INFO
+
+  pattern:
+    level: "%5p [auth-service,%X{traceId:-},%X{spanId:-}]"
