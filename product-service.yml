@@ -17,6 +17,9 @@ eureka:
     service-url:
       defaultZone: http://localhost:8761/eureka
 
+  instance:
+    prefer-ip-address: true
+
 management:
   endpoints:
     web:
@@ -35,6 +38,13 @@ management:
     tracing:
       endpoint: http://localhost:9411/api/v2/spans
 
+metrics:
+  tags:
+    application: product-service
+
 logging:
+  level:
+    root: INFO
+
   pattern:
     level: "%5p [product-service,%X{traceId:-},%X{spanId:-}]"
