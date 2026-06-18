@@ -20,6 +20,13 @@ management:
     health:
       show-details: always
 
+metrics:
+  tags:
+    application: service-registry
+
 logging:
+  level:
+    root: INFO
+
   pattern:
     level: "%5p [service-registry,%X{traceId:-},%X{spanId:-}]"
