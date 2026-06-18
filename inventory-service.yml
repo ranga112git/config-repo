@@ -2,6 +2,9 @@ server:
   port: 8084
 
 spring:
+  application:
+    name: inventory-service
+
   datasource:
     url: jdbc:postgresql://localhost:5432/inventory_service
     username: postgres
@@ -30,16 +33,6 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
-
 eureka:
   client:
     service-url:
@@ -48,6 +41,35 @@ eureka:
   instance:
     prefer-ip-address: true
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,refresh
+
+  endpoint:
+    health:
+      show-details: always
+
+  tracing:
+    sampling:
+      probability: 1.0
+
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+
+metrics:
+  tags:
+    application: inventory-service
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
 logging:
   level:
-    org.springframework.kafka: DEBUG
+    root: INFO
+
+  pattern:
+    level: "%5p [inventory-service,%X{traceId:-},%X{spanId:-}]"
