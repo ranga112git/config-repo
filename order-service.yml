@@ -23,7 +23,11 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
       properties:
-        spring.json.add.type.headers: true
+        spring:
+          json:
+            add:
+              type:
+                headers: true
 
 eureka:
   client:
@@ -68,3 +72,76 @@ logging:
 
   pattern:
     level: "%5p [order-service,%X{traceId:-},%X{spanId:-}]"
+
+# =====================================
+# RESILIENCE4J CONFIGURATION
+# =====================================
+
+resilience4j:
+
+  circuitbreaker:
+    instances:
+
+      inventoryService:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        permittedNumberOfCallsInHalfOpenState: 3
+        waitDurationInOpenState: 30s
+        failureRateThreshold: 50
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+
+      productService:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        permittedNumberOfCallsInHalfOpenState: 3
+        waitDurationInOpenState: 30s
+        failureRateThreshold: 50
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+
+  retry:
+    instances:
+
+      inventoryService:
+        maxAttempts: 3
+        waitDuration: 2s
+
+      productService:
+        maxAttempts: 3
+        waitDuration: 2s
+
+  ratelimiter:
+    instances:
+
+      inventoryService:
+        limitForPeriod: 10
+        limitRefreshPeriod: 1s
+        timeoutDuration: 1s
+
+      productService:
+        limitForPeriod: 10
+        limitRefreshPeriod: 1s
+        timeoutDuration: 1s
+
+  bulkhead:
+    instances:
+
+      inventoryService:
+        maxConcurrentCalls: 20
+        maxWaitDuration: 1s
+
+      productService:
+        maxConcurrentCalls: 20
+        maxWaitDuration: 1s
+
+  timelimiter:
+    instances:
+
+      inventoryService:
+        timeoutDuration: 5s
+        cancelRunningFuture: true
+
+      productService:
+        timeoutDuration: 5s
+        cancelRunningFuture: true
