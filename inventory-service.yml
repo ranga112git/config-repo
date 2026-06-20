@@ -45,11 +45,15 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,prometheus,refresh
+        include: "*"
 
   endpoint:
     health:
       show-details: always
+
+  health:
+    circuitbreakers:
+      enabled: true
 
   tracing:
     sampling:
@@ -70,6 +74,71 @@ springdoc:
 logging:
   level:
     root: INFO
+    com.example.inventory_service.feign: DEBUG
+    org.springframework.cloud.openfeign: DEBUG
+    feign: DEBUG
 
   pattern:
     level: "%5p [inventory-service,%X{traceId:-},%X{spanId:-}]"
+
+resilience4j:
+
+  circuitbreaker:
+
+    instances:
+
+      productService:
+
+        register-health-indicator: true
+
+        sliding-window-type: COUNT_BASED
+
+        sliding-window-size: 10
+
+        minimum-number-of-calls: 5
+
+        failure-rate-threshold: 50
+
+        wait-duration-in-open-state: 30s
+
+        permitted-number-of-calls-in-half-open-state: 3
+
+        automatic-transition-from-open-to-half-open-enabled: true
+
+  retry:
+
+    instances:
+
+      productService:
+
+        max-attempts: 3
+
+        wait-duration: 2s
+
+  ratelimiter:
+
+    instances:
+
+      productService:
+
+        limit-for-period: 10
+
+        limit-refresh-period: 1s
+
+        timeout-duration: 1s
+
+  bulkhead:
+
+    instances:
+
+      productService:
+
+        max-concurrent-calls: 10
+
+  timelimiter:
+
+    instances:
+
+      productService:
+
+        timeout-duration: 5s
