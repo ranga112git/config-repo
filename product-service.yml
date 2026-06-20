@@ -2,6 +2,9 @@ server:
   port: 8083
 
 spring:
+  application:
+    name: product-service
+
   datasource:
     url: jdbc:postgresql://localhost:5432/product_service
     username: postgres
@@ -11,6 +14,12 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 60000
 
 eureka:
   client:
@@ -45,6 +54,11 @@ metrics:
 logging:
   level:
     root: INFO
+    org.springframework.cache: TRACE
 
   pattern:
-    level: "%5p [product-service,%X{traceId:-},%X{spanId:-}]"
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
