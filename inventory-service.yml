@@ -1,107 +1,109 @@
 server:
-  port: 8084
+port: 8084
 
 spring:
-  application:
-    name: inventory-service
+application:
+name: inventory-service
 
-  datasource:
-    url: jdbc:postgresql://localhost:5432/inventory_service
-    username: postgres
-    password: root
+datasource:
+url: jdbc:postgresql://postgres:5432/inventory_service
+username: postgres
+password: root
 
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
+jpa:
+hibernate:
+ddl-auto: update
+show-sql: true
 
-  kafka:
-    bootstrap-servers: localhost:9092
+kafka:
+bootstrap-servers: kafka:9092
 
-    consumer:
-      group-id: inventory-group
-      auto-offset-reset: earliest
+```
+consumer:
+  group-id: inventory-group
+  auto-offset-reset: earliest
 
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+producer:
+  key-serializer: org.apache.kafka.common.serialization.StringSerializer
+  value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+```
 
 eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka
+client:
+service-url:
+defaultZone: http://eureka-server:8761/eureka
 
-  instance:
-    prefer-ip-address: true
+instance:
+prefer-ip-address: true
 
 management:
-  tracing:
-    enabled: false
+tracing:
+enabled: false
 
-  endpoints:
-    web:
-      exposure:
-        include: "*"
+endpoints:
+web:
+exposure:
+include: "*"
 
-  endpoint:
-    health:
-      show-details: always
+endpoint:
+health:
+show-details: always
 
-  health:
-    circuitbreakers:
-      enabled: true
+health:
+circuitbreakers:
+enabled: true
 
 metrics:
-  tags:
-    application: inventory-service
+tags:
+application: inventory-service
 
 springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
+swagger-ui:
+path: /swagger-ui.html
 
 logging:
-  level:
-    root: INFO
-    com.example.inventory_service.feign: DEBUG
-    org.springframework.cloud.openfeign: DEBUG
-    feign: DEBUG
+level:
+root: INFO
+com.example.inventory_service.feign: DEBUG
+org.springframework.cloud.openfeign: DEBUG
+feign: DEBUG
 
-  pattern:
-    level: "%5p [inventory-service,%X{traceId:-},%X{spanId:-}]"
+pattern:
+level: "%5p [inventory-service,%X{traceId:-},%X{spanId:-}]"
 
 resilience4j:
 
-  circuitbreaker:
-    instances:
-      productService:
-        register-health-indicator: true
-        sliding-window-type: COUNT_BASED
-        sliding-window-size: 10
-        minimum-number-of-calls: 5
-        failure-rate-threshold: 50
-        wait-duration-in-open-state: 30s
-        permitted-number-of-calls-in-half-open-state: 3
-        automatic-transition-from-open-to-half-open-enabled: true
+circuitbreaker:
+instances:
+productService:
+register-health-indicator: true
+sliding-window-type: COUNT_BASED
+sliding-window-size: 10
+minimum-number-of-calls: 5
+failure-rate-threshold: 50
+wait-duration-in-open-state: 30s
+permitted-number-of-calls-in-half-open-state: 3
+automatic-transition-from-open-to-half-open-enabled: true
 
-  retry:
-    instances:
-      productService:
-        max-attempts: 3
-        wait-duration: 2s
+retry:
+instances:
+productService:
+max-attempts: 3
+wait-duration: 2s
 
-  ratelimiter:
-    instances:
-      productService:
-        limit-for-period: 10
-        limit-refresh-period: 1s
-        timeout-duration: 1s
+ratelimiter:
+instances:
+productService:
+limit-for-period: 10
+limit-refresh-period: 1s
+timeout-duration: 1s
 
-  bulkhead:
-    instances:
-      productService:
-        max-concurrent-calls: 10
+bulkhead:
+instances:
+productService:
+max-concurrent-calls: 10
 
-  timelimiter:
-    instances:
-      productService:
-        timeout-duration: 5s
+timelimiter:
+instances:
+productService:
+timeout-duration: 5s
